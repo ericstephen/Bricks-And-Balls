@@ -9,6 +9,8 @@
 #import "BABAppDelegate.h"
 #import "BABGameBoardVC.h"
 
+#import <Crashlytics/Crashlytics.h>
+
 @implementation BABAppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
@@ -16,7 +18,12 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     
+    [Crashlytics startWithAPIKey:@"821b48fa4078ee13471f3e566c6cb4af466b0521"];
+    
      self.window.rootViewController = [[BABGameBoardVC alloc]init];
+    
+
+    
      self.window.backgroundColor = [UIColor whiteColor];
     [self.window makeKeyAndVisible];
     return YES;

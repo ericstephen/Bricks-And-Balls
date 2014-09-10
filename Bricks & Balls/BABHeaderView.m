@@ -7,8 +7,11 @@
 //
 
 #import "BABHeaderView.h"
+#import "BABLevelData.h"
+
 
 @implementation BABHeaderView
+
 {
     UIView * ballHolder;
     UILabel * scoreLabel;
@@ -40,6 +43,8 @@
 -(void)setScore:(int)score
 {
     _score = score;
+    
+    if ([BABLevelData mainData].topScore < score) [BABLevelData mainData].topScore = score;
     
     scoreLabel.text = [NSString stringWithFormat:@"Score : %d", score];
 }

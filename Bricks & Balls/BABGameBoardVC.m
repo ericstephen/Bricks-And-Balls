@@ -10,6 +10,8 @@
 #import "BABHeaderView.h"
 #import "BABLevelData.h"
 
+#import <Crashlytics/Crashlytics.h>
+
 // when gameover clear bricks and show start button
 // create new class called "BABLevelData" as a subclass of NSObject  *******
 
@@ -92,10 +94,12 @@
         
          powerBehavior = [[UIDynamicItemBehavior alloc] init];
          powerBehavior.allowsRotation = NO;
+        
         [animator addBehavior:powerBehavior];
         
          powerCollision = [[UICollisionBehavior alloc] init];
          powerCollision.collisionDelegate = self;
+        
         [animator addBehavior:powerCollision];
         
         
@@ -150,12 +154,15 @@
     pushBehavior.pushDirection = CGVectorMake(0.1, -0.1);
 
     [animator addBehavior:pushBehavior];
+    
+    [[Crashlytics sharedInstance] crash];
+    
+
 }
 
 -(void)createPowerUp:(UIView *)brick
 {
     
-   
     powerUpPaddleUp = [[UIView alloc] initWithFrame:CGRectMake(brick.center.x, brick.center.y, 20, 20)];
     powerUpPaddleUp.backgroundColor = [UIColor blackColor];
     powerUpPaddleUp.layer.cornerRadius = 10;
@@ -166,6 +173,7 @@
     [powerCollision addItem:powerUpPaddleUp];
     [powerCollision addItem:paddle];
     
+    
     powerUpPaddleDown = [[UIView alloc] initWithFrame:CGRectMake(brick.center.x, brick.center.y, 20, 20)];
     powerUpPaddleDown.backgroundColor = [UIColor redColor];
     powerUpPaddleDown.layer.cornerRadius = 10;
@@ -174,6 +182,39 @@
     
     [gravityBehavior addItem:powerUpPaddleDown];
     [powerCollision addItem:powerUpPaddleDown];
+    [powerCollision addItem:paddle];
+    
+    
+    powerUpBallBig = [[UIView alloc] initWithFrame:CGRectMake(brick.center.x, brick.center.y, 40, 40)];
+    powerUpBallBig.backgroundColor = [UIColor greenColor];
+    powerUpBallBig.layer.cornerRadius = 20;
+    
+    [self.view addSubview:powerUpBallBig];
+    
+    [gravityBehavior addItem:powerUpBallBig];
+    [powerCollision addItem:powerUpBallBig];
+    [powerCollision addItem:paddle];
+    
+    
+    powerUpBallSmall = [[UIView alloc] initWithFrame:CGRectMake(brick.center.x, brick.center.y, 20, 20)];
+    powerUpBallSmall.backgroundColor = [UIColor blueColor];
+    powerUpBallSmall.layer.cornerRadius = 10;
+    
+    [self.view addSubview:powerUpBallSmall];
+    
+    [gravityBehavior addItem:powerUpBallSmall];
+    [powerCollision addItem:powerUpBallSmall];
+    [powerCollision addItem:paddle];
+    
+    
+    powerUpMultiBall = [[UIView alloc] initWithFrame:CGRectMake(brick.center.x, brick.center.y, 20, 20)];
+    powerUpMultiBall.backgroundColor = [UIColor purpleColor];
+    powerUpMultiBall.layer.cornerRadius = 10;
+    
+    [self.view addSubview:powerUpMultiBall];
+    
+    [gravityBehavior addItem:powerUpMultiBall];
+    [powerCollision addItem:powerUpMultiBall];
     [powerCollision addItem:paddle];
     
 }
@@ -238,8 +279,7 @@
     [startButton setTitle:@"Start" forState:UIControlStateNormal];
     [startButton addTarget:self action:@selector(startGame) forControlEvents:UIControlEventTouchUpInside];
      startButton.backgroundColor = [UIColor grayColor];
-     startButton.layer.cornerRadius = 50;
-    
+     startButton.layer.cornerRadius = 50;    
     
     [self.view addSubview:startButton];
 }
@@ -254,8 +294,8 @@
             [collisionBehavior removeItem:brick];
             [gravityBehavior addItem:brick];
             
-            int random = arc4random_uniform(2);
-            if (random == 1)
+            int random = arc4random_uniform(6);
+            if (random == 2)
             {
                 [self createPowerUp:(UIView *)brick];
             }
@@ -271,6 +311,7 @@
             }];
         }
     }
+    
     if ([item1 isEqual:powerUpPaddleUp] || [item2 isEqual:powerUpPaddleUp])
     {
         [powerCollision removeItem:powerUpPaddleUp];
@@ -281,11 +322,13 @@
         if (powerUpPaddleUp == nil)
         {
             CGRect frame = paddle.frame;
-            frame.size.width = arc4random_uniform(100) + 10;
+            frame.size.width = arc4random_uniform(100) + 30;
             paddle.frame = frame;
         }
+    }
+    
     if ([item1 isEqual:powerUpPaddleDown] || [item2 isEqual:powerUpPaddleDown])
-        
+    {
         [powerCollision removeItem:powerUpPaddleDown];
         [powerUpPaddleDown removeFromSuperview];
         
@@ -294,10 +337,56 @@
         if (powerUpPaddleDown == nil)
         {
             CGRect frame = paddle.frame;
+            frame.size.width = arc4random_uniform(100) + 30;
+            paddle.frame = frame;
+        }
+    }
+    
+    if ([item1 isEqual:powerUpBallBig] || [item2 isEqual:powerUpBallBig])
+    {
+        [powerCollision removeItem:powerUpBallBig];
+        [powerUpPaddleDown removeFromSuperview];
+        
+        powerUpBallBig = nil;
+        
+        if (powerUpBallBig == nil)
+        {
+            CGRect frame = ball.frame;
+            frame.size.width = 60;
+            ball.frame = frame;
+        }
+    }
+    
+    if ([item1 isEqual:powerUpBallSmall] || [item2 isEqual:powerUpBallSmall])
+    {
+        [powerCollision removeItem:powerUpBallSmall];
+        [powerUpBallSmall removeFromSuperview];
+        
+        powerUpBallSmall = nil;
+        
+        if (powerUpBallSmall == nil)
+        {
+            CGRect frame = paddle.frame;
             frame.size.width = arc4random_uniform(100) + 40;
             paddle.frame = frame;
         }
     }
+    
+    if ([item1 isEqual:powerUpMultiBall] || [item2 isEqual:powerUpMultiBall])
+    {
+        [powerCollision removeItem:powerUpMultiBall];
+        [powerUpMultiBall removeFromSuperview];
+        
+        powerUpMultiBall = nil;
+        
+        if (powerUpMultiBall == nil)
+        {
+            CGRect frame = paddle.frame;
+            frame.size.width = arc4random_uniform(100) + 40;
+            paddle.frame = frame;
+        }
+    }
+
     if (bricks.count == 0)
     {
         [collisionBehavior removeItem:ball];

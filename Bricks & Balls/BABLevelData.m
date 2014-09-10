@@ -34,6 +34,10 @@
     self = [super init];
     if (self)
     {
+        NSUserDefaults * nsDefaults = [NSUserDefaults standardUserDefaults];
+
+        self.topScore = [nsDefaults integerForKey:@"topScore"];
+        
         levels = @[
                    @{
                        @"cols" : @6,
@@ -46,6 +50,23 @@
                    ];
     }
     return self;
+}
+
+-(void)setTopScore:(int)topScore
+{
+    _topScore = topScore;
+    
+    NSUserDefaults * nsDefaults = [NSUserDefaults standardUserDefaults];
+    [nsDefaults setInteger:topScore forKey:@"topScore"];
+    [nsDefaults synchronize];
+}
+
+-(void)setCurrentLevel:(int)currentLevel
+{
+    if (currentLevel >= levels.count)
+    {
+        _currentLevel = 0;
+    }
 }
 
 - (NSDictionary *)levelInfo;
